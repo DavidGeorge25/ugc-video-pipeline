@@ -282,7 +282,11 @@ def compose(cfg, tl, cut_mp4, alpha_mkv, out_mp4, assets):
         M = person_matrix(C.get("person", "tilt"), geo, cfg.get("person_scale", 1.0))
         fg = cv2.warpAffine(np.frombuffer(buf, np.uint8).reshape(OH, OW, 3), M, (OW, OH), flags=cv2.INTER_CUBIC)
         al = cv2.warpAffine(np.frombuffer(abuf, np.uint8).reshape(OH, OW), M, (OW, OH), flags=cv2.INTER_LINEAR).astype(np.float32)[..., None] / 255
-        out = out * (1 - al) + fg.astype(np.float32) * al
+        # green-screen spill removal: green can never exceed the brighter of red/blue (skin, black shirt unaffected)
+        fgf = fg.astype(np.float32)
+        fgf[..., 1] = np.minimum(fgf[..., 1], np.maximum(fgf[..., 0], fgf[..., 2]))
+        al = np.clip((al - 0.12) / 0.88, 0, 1)          # pull the soft edge in slightly so no green rim remains
+        out = out * (1 - al) + fgf * al
         # title + captions
         if L["title_img"] is not None:
             paste_rgba(out, L["title_img"], OW / 2, OH * C.get("title_y", 0.17))

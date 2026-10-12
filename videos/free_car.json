@@ -1,0 +1,152 @@
+{
+ "name": "hedwig_free_car",
+ "assets": {
+  "sankey_config": "free_car_sankey.json",
+  "image": "../assets/car_horse.png",
+  "emails_png": "../assets/emails.png",
+  "recording": "../assets/hedwig.mov"
+ },
+ "recording_views": {
+  "full": [
+   1460,
+   880,
+   2880
+  ],
+  "flow": [
+   1460,
+   880,
+   2880
+  ]
+ },
+ "lines": [
+  {
+   "text": "Why would you buy a new car when you could cold email every single car company and ask them for a free one?",
+   "bg": "image",
+   "person": "center",
+   "title": "POV: you asked every car company for a FREE car 🚗😭",
+   "title_y": 0.22
+  },
+  {
+   "text": "I wanted to see if this would actually work, so I found every single car brand and asked for a free car.",
+   "bg": "emails",
+   "person": "right",
+   "title": "POV: you asked every car company for a FREE car 🚗😭",
+   "title_y": 0.22
+  },
+  {
+   "text": "In total, I found 567 emails, and I'm just so surprised that there were so many companies selling them.",
+   "bg": "sankey",
+   "focus": [
+    "Emails Sent"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "Now, 113 of them gave me an auto-reply, and that was kind of annoying that it was all AI automated.",
+   "bg": "sankey",
+   "focus": [
+    "Auto-Reply"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "48 of them didn't even send, so I'm pretty sure it went straight to the spam.",
+   "bg": "sankey",
+   "focus": [
+    "Failed to Send"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "And then 328 of them straight out ghosted me.",
+   "bg": "sankey",
+   "focus": [
+    "No Response"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "So at this point, I was starting to lose hope.",
+   "bg": "sankey",
+   "focus": [
+    "No Response"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "But I did end up getting 78 responses.",
+   "bg": "sankey",
+   "focus": [
+    "Got a Response"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "So now I'm gonna go to Hedwig and draft a convincing email response.",
+   "bg": "recording",
+   "mode": "freeze",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ],
+   "person": "demo"
+  },
+  {
+   "text": "And in one click, Hedwig will draft a response for every single email for me.",
+   "bg": "recording",
+   "mode": "play",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ],
+   "person": "demo"
+  },
+  {
+   "text": "Unfortunately, 51 of them said no, but 5 of them did send me a free sticker.",
+   "bg": "sankey",
+   "focus": [
+    [
+     "Said No",
+     null
+    ],
+    [
+     "Free Sticker",
+     "but"
+    ]
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "And I was pretty surprised that 22 of them actually said yes.",
+   "bg": "sankey",
+   "focus": [
+    "Said Yes"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "So I was pretty shocked with these results, and I'm not quite sure what they're going to send me, but I do not need 22 cars.",
+   "bg": "image",
+   "person": "center"
+  },
+  {
+   "text": "So, if you want a free one, follow me and comment below, and I'll give away one to any comment with zero likes.",
+   "bg": "image",
+   "person": "center"
+  }
+ ],
+ "person_scale": 0.82,
+ "demo_box": [
+  160,
+  1100
+ ],
+ "speed_map": {
+  "base": 1.25,
+  "slow": 0.75,
+  "slow_phrases": []
+ }
+}

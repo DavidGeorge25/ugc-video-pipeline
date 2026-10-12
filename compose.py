@@ -236,7 +236,28 @@ def compose(cfg, tl, cut_mp4, alpha_mkv, out_mp4, assets):
             d = L["end"] - L["start"]
             L["rate"] = min(2.6, max(1.0, (hed.dur - 0.4 - C.get('start_at', 0.0)) / d))
 
-    # title persists across consecutive lines that share it
+    # per-line white balance: measure skin tone in that line's own footage and neutralize warm/yellow light
+    def _grab(t):
+        f = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t:.2f}", "-i", cut_mp4, "-frames:v", "1", "-vf", "scale=270:480",
+                            "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
+        a = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t:.2f}", "-i", alpha_mkv, "-frames:v", "1", "-vf", "scale=270:480",
+                            "-f", "rawvideo", "-pix_fmt", "gray", "-"], capture_output=True).stdout
+        if len(f) < 270 * 480 * 3 or len(a) < 270 * 480: return None, None
+        return np.frombuffer(f, np.uint8).reshape(480, 270, 3).astype(np.float32), np.frombuffer(a, np.uint8).reshape(480, 270).astype(np.float32) / 255
+    WB_TARGET = np.array([1.0, 0.80, 0.70])           # daylight-balanced skin ratio R:G:B
+    for L in lines:
+        L["wb"] = np.ones(3, np.float32)
+        if not cfg.get("white_balance", True): continue
+        px = []
+        for t in np.linspace(L["start"] + 0.2, max(L["start"] + 0.3, L["end"] - 0.2), 3):
+            f, a = _grab(t)
+            if f is None: continue
+            p = f[a > 0.6]; lum = p.mean(1); px.append(p[(lum > 90) & (p[:, 0] > p[:, 2])])
+        px = np.concatenate(px) if px else np.zeros((0, 3))
+        if len(px) > 200:
+            r = px.mean(0) / px.mean(0)[0]
+            g = WB_TARGET / r; g = np.clip(g / g.max(), 0.6, 1.0)
+            L["wb"] = (g * cfg.get("exposure", 1.15)).astype(np.float32)
     rd_v = subprocess.Popen(["ffmpeg", "-v", "error", "-i", cut_mp4, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE, bufsize=10 ** 8)
     rd_a = subprocess.Popen(["ffmpeg", "-v", "error", "-i", alpha_mkv, "-vf", f"scale={OW}:{OH}:flags=bicubic", "-f", "rawvideo", "-pix_fmt", "gray", "-"],
                             stdout=subprocess.PIPE, bufsize=10 ** 8)
@@ -286,6 +307,8 @@ def compose(cfg, tl, cut_mp4, alpha_mkv, out_mp4, assets):
         fgf = fg.astype(np.float32)
         fgf[..., 1] = np.minimum(fgf[..., 1], np.maximum(fgf[..., 0], fgf[..., 2]))
         al = np.clip((al - 0.12) / 0.88, 0, 1)          # pull the soft edge in slightly so no green rim remains
+        if not np.allclose(L["wb"], 1):
+            fgf = 255 * np.power(np.clip(fgf * L["wb"] / 255, 0, 1), 0.9)
         out = out * (1 - al) + fgf * al
         # title + captions
         if L["title_img"] is not None:

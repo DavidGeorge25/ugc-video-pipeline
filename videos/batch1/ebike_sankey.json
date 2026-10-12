@@ -1,0 +1,48 @@
+{
+ "source": {
+  "label": "Emails Sent",
+  "value": 643,
+  "color": "#bab0ab"
+ },
+ "mid": [
+  {
+   "label": "Auto-Reply",
+   "value": 146,
+   "color": "#4e79a7"
+  },
+  {
+   "label": "Failed to Send",
+   "value": 65,
+   "color": "#f28e2c"
+  },
+  {
+   "label": "No Response",
+   "value": 334,
+   "color": "#e15759"
+  },
+  {
+   "label": "Got a Response",
+   "value": 98,
+   "color": "#76b7b2"
+  }
+ ],
+ "end_parent": "Got a Response",
+ "end": [
+  {
+   "label": "Said No",
+   "value": 73,
+   "color": "#59a14f"
+  },
+  {
+   "label": "Freebies",
+   "value": 5,
+   "color": "#edc949"
+  },
+  {
+   "label": "Said Yes",
+   "value": 20,
+   "color": "#59a14f"
+  }
+ ],
+ "credit": false
+}

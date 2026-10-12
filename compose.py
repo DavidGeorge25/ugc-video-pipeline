@@ -214,8 +214,15 @@ def compose(cfg, tl, cut_mp4, alpha_mkv, out_mp4, assets):
         L["keys"] = keys
         L["title_img"] = text_rgba(C["title"], 77, 600, stroke=3, maxw=830, line_gap=1.24) if C.get("title") else None
         # caption chunks
+        # "this many" (said while pointing at the chart) -> show the real number in the caption
+        words = [list(w) for w in L["words"]]
+        if C.get("num") is not None:
+            for k in range(len(words) - 1):
+                if re.sub(r"\W", "", words[k][0].lower()) in ("this", "that") and re.sub(r"\W", "", words[k + 1][0].lower()) == "many":
+                    tail = re.sub(r"^[\w']+", "", words[k + 1][0])
+                    words[k][0] = f"{C['num']:,}" + tail; del words[k + 1]; break
         chunks, cur = [], []
-        for wd, t in L["words"]:
+        for wd, t in words:
             cur.append((wd, t))
             if len(cur) >= 3 or sum(len(x[0]) for x in cur) >= 14 or re.search(r"[.,!?]$", wd):
                 chunks.append(cur); cur = []

@@ -6,6 +6,7 @@ from rapidfuzz.distance import Levenshtein
 from asr import transcribe
 
 def norm_tokens(text):
+    text = re.sub(r"\b([eE])-(\w)", r"\1\2", text)   # e-bike == ebike
     text = text.replace("-", " ").replace("’", "'")
     out = []
     for w in text.split():

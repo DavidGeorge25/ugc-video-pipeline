@@ -1,0 +1,136 @@
+{
+ "name": "05_headphones",
+ "assets": {
+  "sankey_config": "headphones_sankey.json",
+  "image": "../../assets/batch1/headphones_hero.png",
+  "emails_png": "../../assets/batch1/headphones_emails.png",
+  "recording": "../../assets/hedwig.mov"
+ },
+ "recording_views": {
+  "full": [
+   1460,
+   880,
+   2880
+  ],
+  "flow": [
+   1460,
+   880,
+   2880
+  ]
+ },
+ "lines": [
+  {
+   "text": "What happens if you email every single headphone brand in the world and ask them for a free pair of headphones?",
+   "bg": "image",
+   "person": "center",
+   "title": "POV: you asked every headphones brand for a FREE headphones 🎧😭"
+  },
+  {
+   "text": "So I was curious about this, so I made a list of every headphone brand and I sent them all an email asking them for a free pair of headphones.",
+   "bg": "emails",
+   "person": "right",
+   "title": "POV: you asked every headphones brand for a FREE headphones 🎧😭"
+  },
+  {
+   "text": "In total, I emailed this many companies, and I had no idea that this many companies even made this.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Emails Sent"
+   ],
+   "num": 244
+  },
+  {
+   "text": "So this many just gave me an auto-reply, which is pretty lame because it seems like AI's just doing most of the work in that.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Auto-Reply"
+   ],
+   "num": 36
+  },
+  {
+   "text": "This many didn't even send, so it looks like I'm blocked or their inbox just wasn't receiving it.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Failed to Send"
+   ],
+   "num": 15
+  },
+  {
+   "text": "And this many actually just left me on delivered, which made me lose a lot of hope.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "No Response"
+   ],
+   "num": 166
+  },
+  {
+   "text": "But after all that, these are how many responses I got.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Got a Response"
+   ]
+  },
+  {
+   "text": "And if you're wondering how I even emailed that many companies, I used this tool called Hedwig, and it found all the companies for me and sent all of those emails automatically.",
+   "bg": "recording",
+   "person": "demo",
+   "mode": "play",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ]
+  },
+  {
+   "text": "Now, out of the companies that responded, this many said no, however, a bunch of them did send me some free stickers and even some discount codes, which is pretty sweet, I guess.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    [
+     "Said No",
+     null
+    ],
+    [
+     "Freebies",
+     "however"
+    ]
+   ],
+   "num": 21
+  },
+  {
+   "text": "Now, the crazy thing is that, surprisingly, this many headphone brands actually said yes.",
+   "bg": "sankey",
+   "focus": [
+    "Said Yes"
+   ],
+   "person": "tilt",
+   "num": 3
+  },
+  {
+   "text": "So I do not need this many pairs of headphones.",
+   "bg": "image",
+   "person": "center"
+  },
+  {
+   "text": "So if you want one, just follow me, comment below, and in a week I'll send it out to whichever comments have zero likes under them.",
+   "bg": "image",
+   "person": "center"
+  }
+ ],
+ "person_scale": 0.82,
+ "demo_box": [
+  160,
+  1100
+ ],
+ "speed_map": {
+  "base": 1.25,
+  "slow": 0.75,
+  "slow_phrases": []
+ }
+}

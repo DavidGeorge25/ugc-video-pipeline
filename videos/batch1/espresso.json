@@ -1,0 +1,131 @@
+{
+ "name": "04_espresso",
+ "assets": {
+  "sankey_config": "espresso_sankey.json",
+  "image": "../../assets/batch1/espresso_hero.png",
+  "emails_png": "../../assets/batch1/espresso_emails.png",
+  "recording": "../../assets/hedwig.mov"
+ },
+ "recording_views": {
+  "full": [
+   1460,
+   880,
+   2880
+  ],
+  "flow": [
+   1460,
+   880,
+   2880
+  ]
+ },
+ "lines": [
+  {
+   "text": "What if you asked every coffee machine brand in the world for a free espresso machine? Would they give you one?",
+   "bg": "image",
+   "person": "center",
+   "title": "POV: you asked every espresso machine brand for a FREE espresso machine ☕😭"
+  },
+  {
+   "text": "I wanted to find out, so I made a list of all of their emails and sent every single one an email asking for a free espresso machine.",
+   "bg": "emails",
+   "person": "right",
+   "title": "POV: you asked every espresso machine brand for a FREE espresso machine ☕😭"
+  },
+  {
+   "text": "In total, I emailed this many companies, and I had no idea that this many companies even made this.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Emails Sent"
+   ],
+   "num": 585
+  },
+  {
+   "text": "So this many just gave me an auto-reply, which is pretty lame because it seems like AI's just doing most of the work in that.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Auto-Reply"
+   ],
+   "num": 138
+  },
+  {
+   "text": "This many didn't even send, so it looks like I'm blocked or their inbox just wasn't receiving it.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Failed to Send"
+   ],
+   "num": 52
+  },
+  {
+   "text": "And this many actually just left me on delivered, which made me lose a lot of hope.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "No Response"
+   ],
+   "num": 314
+  },
+  {
+   "text": "But after all that, these are how many responses I got.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Got a Response"
+   ]
+  },
+  {
+   "text": "And if you're wondering how I even emailed that many companies, I used this tool called Hedwig, and it found all the companies for me and sent all of those emails automatically.",
+   "bg": "recording",
+   "person": "demo",
+   "mode": "play",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ]
+  },
+  {
+   "text": "Now, out of the companies that responded, this many said no, however, a bunch of them did send me some free stickers and even some discount codes, which is pretty sweet, I guess.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    [
+     "Said No",
+     null
+    ],
+    [
+     "Freebies",
+     "however"
+    ]
+   ],
+   "num": 67
+  },
+  {
+   "text": "But I was shocked because this many actually said yes to me, so I don't know if this is real, but I do not need that many espresso machines.",
+   "bg": "sankey",
+   "focus": [
+    "Said Yes"
+   ],
+   "person": "tilt",
+   "num": 12
+  },
+  {
+   "text": "So if you want one, just follow me and comment below, and if your comment has zero likes under it, I'll ship it to you.",
+   "bg": "image",
+   "person": "center"
+  }
+ ],
+ "person_scale": 0.82,
+ "demo_box": [
+  160,
+  1100
+ ],
+ "speed_map": {
+  "base": 1.25,
+  "slow": 0.75,
+  "slow_phrases": []
+ }
+}

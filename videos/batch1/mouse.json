@@ -1,0 +1,131 @@
+{
+ "name": "03_mouse",
+ "assets": {
+  "sankey_config": "mouse_sankey.json",
+  "image": "../../assets/batch1/mouse_hero.png",
+  "emails_png": "../../assets/batch1/mouse_emails.png",
+  "recording": "../../assets/hedwig.mov"
+ },
+ "recording_views": {
+  "full": [
+   1460,
+   880,
+   2880
+  ],
+  "flow": [
+   1460,
+   880,
+   2880
+  ]
+ },
+ "lines": [
+  {
+   "text": "What if you asked every single gaming company in the world for a free gaming mouse?",
+   "bg": "image",
+   "person": "center",
+   "title": "POV: you asked every gaming mouse brand for a FREE gaming mouse 🖱️😭"
+  },
+  {
+   "text": "I wanted to find out, so I made a giant list of all of their emails and I asked every single one for a free mouse.",
+   "bg": "emails",
+   "person": "right",
+   "title": "POV: you asked every gaming mouse brand for a FREE gaming mouse 🖱️😭"
+  },
+  {
+   "text": "In total, I emailed this many companies, and I had no idea that this many companies even made this.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Emails Sent"
+   ],
+   "num": 490
+  },
+  {
+   "text": "So this many just gave me an auto-reply, which is pretty lame because it seems like AI's just doing most of the work in that.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Auto-Reply"
+   ],
+   "num": 76
+  },
+  {
+   "text": "This many didn't even send, so it looks like I'm blocked or their inbox just wasn't receiving it.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Failed to Send"
+   ],
+   "num": 40
+  },
+  {
+   "text": "And this many actually just left me on delivered, which made me lose a lot of hope.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "No Response"
+   ],
+   "num": 295
+  },
+  {
+   "text": "But after all that, these are how many responses I got.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Got a Response"
+   ]
+  },
+  {
+   "text": "And if you're wondering how I even emailed that many companies, I used this tool called Hedwig, and it found all the companies for me and sent all of those emails automatically.",
+   "bg": "recording",
+   "person": "demo",
+   "mode": "play",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ]
+  },
+  {
+   "text": "Now, out of the companies that responded, this many said no, however, a bunch of them did send me some free stickers and even some discount codes, which is pretty sweet, I guess.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    [
+     "Said No",
+     null
+    ],
+    [
+     "Freebies",
+     "however"
+    ]
+   ],
+   "num": 54
+  },
+  {
+   "text": "But the craziest part is this many actually said yes, and I genuinely don't know what to do with all of these gaming mice.",
+   "bg": "sankey",
+   "focus": [
+    "Said Yes"
+   ],
+   "person": "tilt",
+   "num": 19
+  },
+  {
+   "text": "So if you want one, just follow me, comment below which company I should do next, and I'll just give out the mice to anyone who has zero likes under their comments.",
+   "bg": "image",
+   "person": "center"
+  }
+ ],
+ "person_scale": 0.82,
+ "demo_box": [
+  160,
+  1100
+ ],
+ "speed_map": {
+  "base": 1.25,
+  "slow": 0.75,
+  "slow_phrases": []
+ }
+}

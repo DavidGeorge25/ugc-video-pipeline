@@ -1,0 +1,131 @@
+{
+ "name": "01_ebike",
+ "assets": {
+  "sankey_config": "ebike_sankey.json",
+  "image": "../../assets/batch1/ebike_hero.png",
+  "emails_png": "../../assets/batch1/ebike_emails.png",
+  "recording": "../../assets/hedwig.mov"
+ },
+ "recording_views": {
+  "full": [
+   1460,
+   880,
+   2880
+  ],
+  "flow": [
+   1460,
+   880,
+   2880
+  ]
+ },
+ "lines": [
+  {
+   "text": "So what happens if you email every single e-bike company in the world and ask them for a free e-bike?",
+   "bg": "image",
+   "person": "center",
+   "title": "POV: you asked every e-bike brand for a FREE e-bike 🚲😭"
+  },
+  {
+   "text": "I wanted to find out, so I found every single e-bike company and made a giant list and sent them all emails asking for a free bike.",
+   "bg": "emails",
+   "person": "right",
+   "title": "POV: you asked every e-bike brand for a FREE e-bike 🚲😭"
+  },
+  {
+   "text": "In total, I emailed this many companies, and I had no idea that this many companies even made this.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Emails Sent"
+   ],
+   "num": 643
+  },
+  {
+   "text": "So this many just gave me an auto-reply, which is pretty lame because it seems like AI's just doing most of the work in that.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Auto-Reply"
+   ],
+   "num": 146
+  },
+  {
+   "text": "This many didn't even send, so it looks like I'm blocked or their inbox just wasn't receiving it.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Failed to Send"
+   ],
+   "num": 65
+  },
+  {
+   "text": "And this many actually just left me on delivered, which made me lose a lot of hope.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "No Response"
+   ],
+   "num": 334
+  },
+  {
+   "text": "But after all that, these are how many responses I got.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    "Got a Response"
+   ]
+  },
+  {
+   "text": "And if you're wondering how I even emailed that many companies, I used this tool called Hedwig, and it found all the companies for me and sent all of those emails automatically.",
+   "bg": "recording",
+   "person": "demo",
+   "mode": "play",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ]
+  },
+  {
+   "text": "Now, out of the companies that responded, this many said no, however, a bunch of them did send me some free stickers and even some discount codes, which is pretty sweet, I guess.",
+   "bg": "sankey",
+   "person": "tilt",
+   "focus": [
+    [
+     "Said No",
+     null
+    ],
+    [
+     "Freebies",
+     "however"
+    ]
+   ],
+   "num": 73
+  },
+  {
+   "text": "However, this many companies actually said yes, and I don't know if they're pranking me, but I do not need this many e-bikes.",
+   "bg": "sankey",
+   "focus": [
+    "Said Yes"
+   ],
+   "person": "tilt",
+   "num": 20
+  },
+  {
+   "text": "So if you want one of the e-bikes, just follow me and comment below which company you think I should email next, and I'll just give away e-bikes to whoever has zero likes under their comment.",
+   "bg": "image",
+   "person": "center"
+  }
+ ],
+ "person_scale": 0.82,
+ "demo_box": [
+  160,
+  1100
+ ],
+ "speed_map": {
+  "base": 1.25,
+  "slow": 0.75,
+  "slow_phrases": []
+ }
+}

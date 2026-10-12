@@ -92,6 +92,10 @@ def finish(src, cfg, base):
     subprocess.run(cmd, check=True)
     return out
 
+# voice clarity: trim rumble and boxy low-mids, lift presence and air, even out level, TikTok loudness (-14 LUFS)
+VOICE_EQ = ("highpass=f=80,equalizer=f=300:t=q:w=1:g=-3,equalizer=f=4000:t=q:w=1:g=4,equalizer=f=10000:t=q:w=1:g=2,"
+            "acompressor=threshold=-18dB:ratio=3:attack=5:release=60,loudnorm=I=-14:TP=-1.5:LRA=11")
+
 def varispeed(src, cfg, tl, cfg2):
     """Mostly `base` speed, `slow` speed on punchline phrases. Pitch follows speed (tape-style)."""
     import subprocess, tempfile, re
@@ -124,7 +128,7 @@ def varispeed(src, cfg, tl, cfg2):
     out = src.replace(".mp4", "_varispeed.mp4")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", os.path.join(d, "l.txt"), "-c", "copy", "-movflags", "+faststart", out + ".tmp.mp4"], check=True)
     # hold the last frame 0.6s so the final word never sits on the cut edge
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-vf", "tpad=stop_mode=clone:stop_duration=0.6", "-af", "apad=pad_dur=0.6",
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-vf", "tpad=stop_mode=clone:stop_duration=0.6", "-af", VOICE_EQ + ",apad=pad_dur=0.6",
                     "-c:v", "libx264", "-crf", "16", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out], check=True)
     print("speed segments:", [(round(a, 2), round(b, 2), sp) for a, b, sp in segs])
     return out

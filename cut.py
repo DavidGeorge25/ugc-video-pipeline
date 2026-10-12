@@ -204,7 +204,7 @@ def render_cut(raw, segs, out, fps=30):
         dur = s["e"] - s["s"]; fd = min(0.012, dur / 4); p = os.path.join(d, f"s{i:03d}.mp4")
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{s['s']:.3f}", "-i", raw, "-t", f"{dur:.3f}",
                         "-vf", f"fps={fps},scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1",
-                        "-af", f"highpass=f=70,afftdn=nr=10:nf=-45,afade=t=in:d={fd},afade=t=out:st={dur-fd:.4f}:d={fd}",   # light room-noise cleanup
+                        "-af", f"afade=t=in:d={fd},afade=t=out:st={dur-fd:.4f}:d={fd}",
                         "-c:v", "libx264", "-crf", "14", "-preset", "veryfast", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", p], check=True)
         lst.append(f"file '{p}'")
     open(os.path.join(d, "l.txt"), "w").write("\n".join(lst))

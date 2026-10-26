@@ -129,6 +129,19 @@ def plan(raw, script_lines, min_gap=0.18, pad=0.04, words=None):
         if k is None:
             report.append(f"MISSING line {li+1}: {line[:50]}"); line_words.append(None); continue
         c = cs[k]
+        # false start inside the chosen take ("So now I'm gonna go to Hedwig... so now I'm gonna go to Hedwig Mail and...")
+        # -> start from the LAST restart of the line's opening words
+        L0 = norm_tokens(line); head = L0[:3]
+        if len(head) == 3:
+            restarts = [j for j in range(c["s"] + 1, c["e"] - 2)
+                        if all(tok_eq(toks[j + q][0], head[q]) for q in range(3))]
+            if restarts:
+                ns = restarts[-1]
+                Tw = [t for t, _ in toks[ns:c["e"] + 1]]
+                pr = align(L0, Tw)
+                if pr and len(pr) / len(L0) >= 0.6:
+                    c = dict(c, s=ns, pairs=[(li_, ns + tj) for li_, tj in pr])
+                    report.append(f"  line {li+1}: dropped false start before {toks[ns][0]!r}")
         w0, w1 = toks[c["s"]][1], toks[c["e"]][1]
         ws = words[w0:w1 + 1]
         a, b = speech_span(voiced, hop, ws[0]["s"], ws[-1]["s"])
@@ -139,7 +152,7 @@ def plan(raw, script_lines, min_gap=0.18, pad=0.04, words=None):
             if q >= 10: ib -= q; break
         lim = ia - int(0.15 / hop)
         while ia > max(0, lim) and aud[ia - 1]: ia -= 1
-        a = max(0, ia * hop - 0.03); b = (ib + 1) * hop + 0.05
+        a = max(0, ia * hop - 0.03); b = (ib + 1) * hop + 0.12
         # never bleed into neighbouring words (prevents repeats from overlaps / false starts)
         nxt = words[w1 + 1]["s"] - 0.04 if w1 + 1 < len(words) else b
         prv = words[w0 - 1]["e"] + 0.02 if w0 > 0 else 0
@@ -172,7 +185,7 @@ def plan(raw, script_lines, min_gap=0.18, pad=0.04, words=None):
         if len(seg) < 15 or seg.mean() < 0.3: continue
         lead = int(np.argmax(seg)); trail = int(np.argmax(seg[::-1]))
         sg["s"] = round(sg["s"] + max(0, lead * hop - 0.03), 3)
-        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.06), 3)
+        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.12), 3)
         tight.append(sg)
     segs = tight
     clean = []

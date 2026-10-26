@@ -168,6 +168,30 @@ def person_matrix(preset, geo, mult=1.0):
     M[0, 2] += tx - hx; M[1, 2] += tyf * OH - hy
     return M
 
+def solidify_alpha(a8):
+    """Dark shirt on a dark room makes the matte semi-transparent inside the body (hazy, flickering shirt).
+    Anything enclosed by the silhouette (the frame bottom counts as closed, the body runs off it) becomes opaque;
+    soft edges (hair, fingers) keep their original matte."""
+    h, w = a8.shape; sm = cv2.resize(a8, (w // 4, h // 4), interpolation=cv2.INTER_AREA)
+    body = (sm > 50).astype(np.uint8)
+    body = cv2.morphologyEx(body, cv2.MORPH_CLOSE, np.ones((5, 5), np.uint8))
+    pad = np.zeros((body.shape[0] + 2, body.shape[1] + 2), np.uint8); pad[1:-1, 1:-1] = body; pad[-1, :] = 1
+    ff = pad.copy(); m = np.zeros((pad.shape[0] + 2, pad.shape[1] + 2), np.uint8)
+    cv2.floodFill(ff, m, (0, 0), 1)                     # background reachable from the top-left corner
+    filled = pad | (1 - ff)                             # silhouette + its holes
+    core = cv2.erode(filled[1:-1, 1:-1], np.ones((5, 5), np.uint8))
+    core = cv2.GaussianBlur(cv2.resize(core * 255, (w, h), interpolation=cv2.INTER_LINEAR), (0, 0), 3)
+    out = np.maximum(a8, core).astype(np.float32)
+    # body (below the head): crisp, steady edge instead of RVM's wide smeary fringe on a dark shirt vs dark room.
+    rows = np.where((sm > 128).any(1))[0]
+    if len(rows):
+        y0 = int((rows[0] * 4) + 0.20 * h)                       # ~ chin/neck line; hair above keeps its soft matte
+        x = np.clip((out[y0:] - 70) / 120, 0, 1); x = x * x * (3 - 2 * x) * 255
+        body = cv2.GaussianBlur(x, (0, 0), 1.2)
+        ramp = np.clip(np.arange(h - y0) / 60.0, 0, 1)[:, None]   # blend in over 60px so the neck has no seam
+        out[y0:] = out[y0:] * (1 - ramp) + body * ramp
+    return out.clip(0, 255).astype(np.uint8)
+
 # ---------- main ----------
 def compose(cfg, tl, cut_mp4, alpha_mkv, out_mp4, assets):
     lines = tl["lines"]; total = tl["duration"]
@@ -302,7 +326,9 @@ def compose(cfg, tl, cut_mp4, alpha_mkv, out_mp4, assets):
         # person
         M = person_matrix(C.get("person", "tilt"), geo, cfg.get("person_scale", 1.0))
         fg = cv2.warpAffine(np.frombuffer(buf, np.uint8).reshape(OH, OW, 3), M, (OW, OH), flags=cv2.INTER_CUBIC)
-        al = cv2.warpAffine(np.frombuffer(abuf, np.uint8).reshape(OH, OW), M, (OW, OH), flags=cv2.INTER_LINEAR).astype(np.float32)[..., None] / 255
+        a8 = np.frombuffer(abuf, np.uint8).reshape(OH, OW)
+        if cfg.get("solid_body", True): a8 = solidify_alpha(a8)
+        al = cv2.warpAffine(a8, M, (OW, OH), flags=cv2.INTER_LINEAR).astype(np.float32)[..., None] / 255
         # green-screen spill removal: green can never exceed the brighter of red/blue (skin, black shirt unaffected)
         fgf = fg.astype(np.float32)
         fgf[..., 1] = np.minimum(fgf[..., 1], np.maximum(fgf[..., 0], fgf[..., 2]))

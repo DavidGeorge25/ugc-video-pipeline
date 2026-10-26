@@ -132,8 +132,8 @@
   1100
  ],
  "speed_map": {
-  "base": 1.25,
-  "slow": 0.75,
+  "base": 1.0,
+  "slow": 1.0,
   "slow_phrases": []
  }
 }

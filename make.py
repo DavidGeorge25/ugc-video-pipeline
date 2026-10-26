@@ -128,8 +128,19 @@ def varispeed(src, cfg, tl, cfg2):
     out = src.replace(".mp4", "_varispeed.mp4")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", os.path.join(d, "l.txt"), "-c", "copy", "-movflags", "+faststart", out + ".tmp.mp4"], check=True)
     # hold the last frame 0.6s so the final word never sits on the cut edge
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-vf", "tpad=stop_mode=clone:stop_duration=0.6", "-af", VOICE_EQ + ",apad=pad_dur=0.6",
-                    "-c:v", "libx264", "-crf", "16", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out], check=True)
+    music = cfg.get("music")
+    if music:   # background bed: normalized well under the voice (~-30 LUFS vs voice -14), fades in/out, loops if short
+        dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", out + ".tmp.mp4"],
+                                   capture_output=True, text=True).stdout) + 0.6
+        fc = (f"[0:a]{VOICE_EQ},apad=pad_dur=0.6[v];"
+              f"[1:a]loudnorm=I={cfg.get('music_lufs', -30)}:TP=-3,afade=t=in:d=1,afade=t=out:st={dur - 1.5:.2f}:d=1.5,atrim=0:{dur:.2f}[m];"
+              f"[v][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,alimiter=limit=0.95[a]")
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-stream_loop", "-1", "-i", music, "-filter_complex", fc,
+                        "-vf", "tpad=stop_mode=clone:stop_duration=0.6", "-map", "0:v", "-map", "[a]",
+                        "-c:v", "libx264", "-crf", "16", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out], check=True)
+    else:
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-vf", "tpad=stop_mode=clone:stop_duration=0.6", "-af", VOICE_EQ + ",apad=pad_dur=0.6",
+                        "-c:v", "libx264", "-crf", "16", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out], check=True)
     print("speed segments:", [(round(a, 2), round(b, 2), sp) for a, b, sp in segs])
     return out
 

@@ -135,5 +135,6 @@
   "base": 1.0,
   "slow": 1.0,
   "slow_phrases": []
- }
+ },
+ "music": "/home/claude/hedwig/music/nocturne_sped.mp3"
 }

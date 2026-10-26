@@ -181,7 +181,7 @@ def solidify_alpha(a8):
     filled = pad | (1 - ff)                             # silhouette + its holes
     core = cv2.erode(filled[1:-1, 1:-1], np.ones((5, 5), np.uint8))
     core = cv2.GaussianBlur(cv2.resize(core * 255, (w, h), interpolation=cv2.INTER_LINEAR), (0, 0), 3)
-    out = np.maximum(a8, core).astype(np.float32)
+    out = a8.astype(np.float32)        # NOTE: no hole filling: gaps between arm and body are real background
     # body (below the head): crisp, steady edge instead of RVM's wide smeary fringe on a dark shirt vs dark room.
     rows = np.where((sm > 128).any(1))[0]
     if len(rows):
@@ -190,6 +190,9 @@ def solidify_alpha(a8):
         body = cv2.GaussianBlur(x, (0, 0), 1.2)
         ramp = np.clip(np.arange(h - y0) / 60.0, 0, 1)[:, None]   # blend in over 60px so the neck has no seam
         out[y0:] = out[y0:] * (1 - ramp) + body * ramp
+    fx = np.clip(np.minimum(np.arange(w), w - 1 - np.arange(w)) / (0.07 * w), 0, 1)
+    fy = np.clip((h - 1 - np.arange(h)) / (0.05 * h), 0, 1)
+    out *= (fx[None, :] ** 1.5) * (fy[:, None] ** 1.5)
     return out.clip(0, 255).astype(np.uint8)
 
 # ---------- main ----------

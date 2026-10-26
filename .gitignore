@@ -3,3 +3,4 @@ out/
 __pycache__/
 *.mp4
 !assets/*.mp4
+videos/*/jobs_*.json

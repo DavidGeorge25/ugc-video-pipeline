@@ -118,7 +118,7 @@ def speech_span(voiced, hop, t0, t1, lead=0.4, tail=1.0):
         if quiet >= 20: e -= quiet; break
     return s * hop, (e + 1) * hop
 
-def plan(raw, script_lines, min_gap=0.18, pad=0.04, words=None):
+def plan(raw, script_lines, min_gap=0.28, pad=0.04, words=None):
     words = words or transcribe(raw)
     toks = expand_words(words)
     voiced, hop = rms_track(raw)
@@ -149,10 +149,10 @@ def plan(raw, script_lines, min_gap=0.18, pad=0.04, words=None):
         aud = AUDIBLE; ib, ia = int(b / hop), int(a / hop); q = 0; lim = ib + int(0.35 / hop)
         while ib < min(len(aud) - 1, lim):
             ib += 1; q = q + 1 if not aud[ib] else 0
-            if q >= 10: ib -= q; break
+            if q >= 14: ib -= q; break
         lim = ia - int(0.15 / hop)
         while ia > max(0, lim) and aud[ia - 1]: ia -= 1
-        a = max(0, ia * hop - 0.03); b = (ib + 1) * hop + 0.12
+        a = max(0, ia * hop - 0.04); b = (ib + 1) * hop + 0.18
         # never bleed into neighbouring words (prevents repeats from overlaps / false starts)
         nxt = words[w1 + 1]["s"] - 0.04 if w1 + 1 < len(words) else b
         prv = words[w0 - 1]["e"] + 0.02 if w0 > 0 else 0
@@ -167,7 +167,7 @@ def plan(raw, script_lines, min_gap=0.18, pad=0.04, words=None):
             else:
                 if run * hop >= min_gap:
                     gs, ge = (j - run) * hop, j * hop
-                    pieces.append((cur, gs + pad)); cur = ge - pad
+                    pieces.append((cur, gs + 0.10)); cur = ge - 0.06   # let the word before the pause fully ring out
                 run = 0
             j += 1
         pieces.append((cur, b))
@@ -185,7 +185,7 @@ def plan(raw, script_lines, min_gap=0.18, pad=0.04, words=None):
         if len(seg) < 15 or seg.mean() < 0.3: continue
         lead = int(np.argmax(seg)); trail = int(np.argmax(seg[::-1]))
         sg["s"] = round(sg["s"] + max(0, lead * hop - 0.03), 3)
-        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.12), 3)
+        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.20), 3)
         tight.append(sg)
     segs = tight
     clean = []

@@ -96,6 +96,23 @@ def finish(src, cfg, base):
 VOICE_EQ = ("afftdn=nr=12:nf=-42:tn=1,highpass=f=80,equalizer=f=300:t=q:w=1:g=-3,equalizer=f=4000:t=q:w=1:g=4,equalizer=f=10000:t=q:w=1:g=2,"
             "acompressor=threshold=-18dB:ratio=3:attack=5:release=60,loudnorm=I=-14:TP=-1.5:LRA=11")
 
+RNNOISE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "rnnoise", "std.rnnn")
+VOICE_PRE = ("highpass=f=80,equalizer=f=300:t=q:w=1:g=-3,equalizer=f=3500:t=q:w=1.2:g=2,lowpass=f=12000,"
+             "acompressor=threshold=-20dB:ratio=2.5:attack=8:release=80")
+
+def clean_voice(src, out_wav):
+    """RNNoise speech denoise (ffmpeg arnndn) + voice EQ, then TWO-PASS LINEAR loudnorm to -14 LUFS.
+    (Single-pass loudnorm is dynamic: it pumps the hiss between words up to near speech level = 'scratchy'.)"""
+    import json as _j, subprocess
+    pre = (f"arnndn=m={RNNOISE}:mix=0.9," if os.path.exists(RNNOISE) else "afftdn=nr=12:nf=-42:tn=1,") + VOICE_PRE + ",apad=pad_dur=0.6"
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-i", src, "-vn", "-af", pre + ",loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"],
+                       capture_output=True, text=True).stderr
+    m = _j.loads(r[r.rindex("{"):r.rindex("}") + 1])
+    ln = (f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}:"
+          f"measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-vn", "-af", pre + "," + ln + ",alimiter=limit=0.95", "-ar", "48000", "-ac", "2", out_wav], check=True)
+    return out_wav
+
 def varispeed(src, cfg, tl, cfg2):
     """Mostly `base` speed, `slow` speed on punchline phrases. Pitch follows speed (tape-style)."""
     import subprocess, tempfile, re
@@ -128,19 +145,20 @@ def varispeed(src, cfg, tl, cfg2):
     out = src.replace(".mp4", "_varispeed.mp4")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", os.path.join(d, "l.txt"), "-c", "copy", "-movflags", "+faststart", out + ".tmp.mp4"], check=True)
     # hold the last frame 0.6s so the final word never sits on the cut edge
+    voice = clean_voice(out + ".tmp.mp4", out + ".voice.wav")
     music = cfg.get("music")
     if music:   # background bed: normalized well under the voice (~-30 LUFS vs voice -14), fades in/out, loops if short
-        dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", out + ".tmp.mp4"],
-                                   capture_output=True, text=True).stdout) + 0.6
-        fc = (f"[0:a]{VOICE_EQ},apad=pad_dur=0.6[v];"
-              f"[1:a]loudnorm=I={cfg.get('music_lufs', -30)}:TP=-3,afade=t=in:d=1,afade=t=out:st={dur - 1.5:.2f}:d=1.5,atrim=0:{dur:.2f}[m];"
-              f"[v][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,alimiter=limit=0.95[a]")
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-stream_loop", "-1", "-i", music, "-filter_complex", fc,
-                        "-vf", "tpad=stop_mode=clone:stop_duration=0.6", "-map", "0:v", "-map", "[a]",
-                        "-c:v", "libx264", "-crf", "16", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out], check=True)
+        dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", voice],
+                                   capture_output=True, text=True).stdout)
+        fc = (f"[2:a]loudnorm=I={cfg.get('music_lufs', -30)}:TP=-3,afade=t=in:d=1,afade=t=out:st={dur - 1.5:.2f}:d=1.5,atrim=0:{dur:.2f}[m];"
+              f"[1:a][m]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,alimiter=limit=0.95[a]")
+        cmd = ["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-i", voice, "-stream_loop", "-1", "-i", music, "-filter_complex",
+               fc + ";[0:v]tpad=stop_mode=clone:stop_duration=0.6[v]", "-map", "[v]", "-map", "[a]"]
     else:
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-vf", "tpad=stop_mode=clone:stop_duration=0.6", "-af", VOICE_EQ + ",apad=pad_dur=0.6",
-                        "-c:v", "libx264", "-crf", "16", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out], check=True)
+        cmd = ["ffmpeg", "-v", "error", "-y", "-i", out + ".tmp.mp4", "-i", voice, "-filter_complex", "[0:v]tpad=stop_mode=clone:stop_duration=0.6[v]",
+               "-map", "[v]", "-map", "1:a"]
+    subprocess.run(cmd + ["-c:v", "libx264", "-crf", "16", "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+                          "-movflags", "+faststart", out], check=True)
     print("speed segments:", [(round(a, 2), round(b, 2), sp) for a, b, sp in segs])
     return out
 

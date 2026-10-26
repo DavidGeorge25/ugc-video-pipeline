@@ -8,4 +8,6 @@ mkdir -p models
 if [ ! -d models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8 ]; then
   curl -sSL https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8.tar.bz2 | tar xj -C models
 fi
+mkdir -p models/rnnoise
+[ -f models/rnnoise/std.rnnn ] || curl -sSL -o models/rnnoise/std.rnnn https://raw.githubusercontent.com/richardpl/arnndn-models/master/std.rnnn
 python3 -c "import asr, cut, compose, matte, sankey, make, review; print('pipeline ready')"

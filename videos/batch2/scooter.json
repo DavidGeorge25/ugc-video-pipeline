@@ -1,0 +1,139 @@
+{
+ "name": "01_scooter",
+ "assets": {
+  "sankey_config": "sankey.json",
+  "image": "../../assets/batch2/scooter_hero.png",
+  "emails_png": "../../assets/batch2/scooter_emails.png",
+  "recording": "../../assets/hedwig.mov"
+ },
+ "recording_views": {
+  "full": [
+   1460,
+   880,
+   2880
+  ],
+  "flow": [
+   1460,
+   880,
+   2880
+  ]
+ },
+ "lines": [
+  {
+   "text": "Why would you buy an electric scooter when you could email every single e-scooter company and ask for a free one?",
+   "bg": "image",
+   "person": "center",
+   "title": "POV: you asked every scooter brand for a FREE e-scooter 🛴😭",
+   "title_y": 0.22
+  },
+  {
+   "text": "I wanted to see if this would actually work, so I emailed every single scooter company and asked for a free e-scooter.",
+   "bg": "emails",
+   "person": "right",
+   "title": "POV: you asked every scooter brand for a FREE e-scooter 🛴😭",
+   "title_y": 0.22
+  },
+  {
+   "text": "In total, I sent 567 emails, and I'm just so surprised that there were that many companies selling them.",
+   "bg": "sankey",
+   "focus": [
+    "Emails Sent"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "113 of them gave me an auto reply, which I found pretty lame because AI was clearly doing all of the work.",
+   "bg": "sankey",
+   "focus": [
+    "Auto-Reply"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "48 of them failed to send, so I'm pretty sure I was just sent to the spam.",
+   "bg": "sankey",
+   "focus": [
+    "Failed to Send"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "And 328 of them straight out ghosted me, and at this point I was really starting to lose hope.",
+   "bg": "sankey",
+   "focus": [
+    "No Response"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "But I did end up getting 78 responses.",
+   "bg": "sankey",
+   "focus": [
+    "Got a Response"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "So now I'm going to go to Hedwig Mail and draft a convincing response.",
+   "bg": "recording",
+   "mode": "freeze",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ],
+   "person": "demo"
+  },
+  {
+   "text": "And right when I click run, Hedwig is going to launch an agent that's going to draft a response to every single email and send them all out.",
+   "bg": "recording",
+   "mode": "play",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ],
+   "person": "demo"
+  },
+  {
+   "text": "Unfortunately 51 of them did say no, but 5 of them did end up sending me free stickers, which I guess is kind of neat.",
+   "bg": "sankey",
+   "focus": [
+    [
+     "Said No",
+     null
+    ],
+    [
+     "Free Sticker",
+     "but"
+    ]
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "But I was pretty surprised to see that 22 of them actually said yes.",
+   "bg": "sankey",
+   "focus": [
+    "Said Yes"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "I was pretty shocked with these results and I have no idea what they're going to send me, but I do not need 22 scooters.",
+   "bg": "image",
+   "person": "center"
+  }
+ ],
+ "person_scale": 0.82,
+ "demo_box": [
+  160,
+  1100
+ ],
+ "speed_map": {
+  "base": 1.25,
+  "slow": 0.75,
+  "slow_phrases": []
+ }
+}

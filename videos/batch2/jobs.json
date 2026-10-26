@@ -1,0 +1,42 @@
+[
+ {
+  "config": "scooter.json",
+  "raw": [
+   "/home/claude/hedwig/raw/scooter_intro.mov",
+   "/mnt/user-data/uploads/IMG_5665.mov",
+   "/home/claude/hedwig/raw/scooter_outro.mov"
+  ]
+ },
+ {
+  "config": "pc.json",
+  "raw": [
+   "/home/claude/hedwig/raw/pc_intro.mov",
+   "/mnt/user-data/uploads/IMG_5665.mov",
+   "/home/claude/hedwig/raw/pc_outro.mov"
+  ]
+ },
+ {
+  "config": "drone.json",
+  "raw": [
+   "/home/claude/hedwig/raw/drone_intro.mov",
+   "/mnt/user-data/uploads/IMG_5665.mov",
+   "/home/claude/hedwig/raw/drone_outro.mov"
+  ]
+ },
+ {
+  "config": "headphones.json",
+  "raw": [
+   "/home/claude/hedwig/raw/headphones_intro.mov",
+   "/mnt/user-data/uploads/IMG_5665.mov",
+   "/home/claude/hedwig/raw/headphones_outro.mov"
+  ]
+ },
+ {
+  "config": "sneakers.json",
+  "raw": [
+   "/home/claude/hedwig/raw/sneakers_intro.mov",
+   "/mnt/user-data/uploads/IMG_5665.mov",
+   "/home/claude/hedwig/raw/sneakers_outro.mov"
+  ]
+ }
+]

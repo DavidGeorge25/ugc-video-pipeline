@@ -171,6 +171,8 @@ def plan(raw, script_lines, min_gap=0.28, pad=0.04, words=None):
                 run = 0
             j += 1
         pieces.append((cur, b))
+        # drop audio islands with no transcribed word in them (mumbled false starts the ASR skipped)
+        pieces = [p for p in pieces if any(w["s"] - 0.15 < p[1] and w["e"] + 0.35 > p[0] for w in ws)]
         for p in pieces:
             if p[1] - p[0] > 0.05: segs.append(dict(s=round(p[0], 3), e=round(p[1], 3), line=li))
         report.append(f"line {li+1}: take {k+1}/{len(cs)} @ {ws[0]['s']:.1f}s score {c['score']:.2f}")

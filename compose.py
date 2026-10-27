@@ -166,6 +166,11 @@ def person_matrix(preset, geo, mult=1.0):
     hx, hy = geo
     M = cv2.getRotationMatrix2D((hx, hy), ang, s)
     M[0, 2] += tx - hx; M[1, 2] += tyf * OH - hy
+    # anchor to the bottom like the professor/react videos: the footage's bottom edge always sits below the canvas,
+    # so the body runs off-screen instead of ending in a visible (blurry) band mid-frame
+    corners = np.array([[0, OH, 1], [OW, OH, 1]], np.float32) @ M.T
+    lift = (OH + 12) - corners[:, 1].min()
+    if lift > 0: M[1, 2] += lift
     return M
 
 def solidify_alpha(a8):

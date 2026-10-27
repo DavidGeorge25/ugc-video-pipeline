@@ -347,8 +347,11 @@ def compose(cfg, tl, cut_mp4, alpha_mkv, out_mp4, assets):
         # title + captions
         if L["title_img"] is not None:
             paste_rgba(out, L["title_img"], OW / 2, OH * C.get("title_y", 0.17))
+        # captions sit just under his chin for the current layout (face is never covered), within 0.745-0.88 of the frame
+        hy_c = geo[0] * M[1, 0] + geo[1] * M[1, 1] + M[1, 2]; sc_c = float(np.hypot(M[0, 0], M[0, 1]))
+        cap_y = min(OH * 0.88, max(OH * 0.745, hy_c + 0.33 * OH * sc_c))
         for st, en, img in L["caps"]:
-            if st <= t < en: paste_rgba(out, img, OW / 2, OH * 0.745); break
+            if st <= t < en: paste_rgba(out, img, OW / 2, cap_y); break
         wr.stdin.write(out.clip(0, 255).astype(np.uint8).tobytes()); fi += 1
     wr.stdin.close(); wr.wait()
     return fi

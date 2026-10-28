@@ -55,7 +55,10 @@ def main(cfg_path, raw, out_dir):
     json.dump(dict(words=words, segs=segs), open(os.path.join(out_dir, "edit.json"), "w"), indent=0)
     cut = os.path.join(out_dir, "cut.mp4"); alpha = os.path.join(out_dir, "alpha.mkv")
     if not (os.environ.get("REUSE") and os.path.exists(cut) and os.path.exists(alpha)):
-        render_cut(raw, segs, cut); matte(cut, alpha)
+        render_cut(raw, segs, cut)
+        if cfg.get("matte") == "green":
+            from matte import green; green(cut, alpha)
+        else: matte(cut, alpha)
     # filter config lines to those present, keep order
     tl = build_timeline(cfg, segs, line_words)
     cfg2 = dict(cfg); cfg2["lines"] = [cfg["lines"][L["idx"]] for L in tl["lines"]]

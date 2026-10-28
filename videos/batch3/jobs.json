@@ -1,0 +1,47 @@
+[
+ {
+  "config": "scooter.json",
+  "raw": [
+   "/home/claude/hedwig/raw2/parts/scooter_intro.mov",
+   "/home/claude/hedwig/raw2/parts/middle.mov",
+   "/home/claude/hedwig/raw2/parts/scooter_outro.mov",
+   "/home/claude/hedwig/raw2/parts/cta.mov"
+  ]
+ },
+ {
+  "config": "pc.json",
+  "raw": [
+   "/home/claude/hedwig/raw2/parts/pc_intro.mov",
+   "/home/claude/hedwig/raw2/parts/middle.mov",
+   "/home/claude/hedwig/raw2/parts/pc_outro.mov",
+   "/home/claude/hedwig/raw2/parts/cta.mov"
+  ]
+ },
+ {
+  "config": "drone.json",
+  "raw": [
+   "/home/claude/hedwig/raw2/parts/drone_intro.mov",
+   "/home/claude/hedwig/raw2/parts/middle.mov",
+   "/home/claude/hedwig/raw2/parts/drone_outro.mov",
+   "/home/claude/hedwig/raw2/parts/cta.mov"
+  ]
+ },
+ {
+  "config": "headphones.json",
+  "raw": [
+   "/home/claude/hedwig/raw2/parts/headphones_intro.mov",
+   "/home/claude/hedwig/raw2/parts/middle.mov",
+   "/home/claude/hedwig/raw2/parts/headphones_outro.mov",
+   "/home/claude/hedwig/raw2/parts/cta.mov"
+  ]
+ },
+ {
+  "config": "sneakers.json",
+  "raw": [
+   "/home/claude/hedwig/raw2/parts/sneakers_intro.mov",
+   "/home/claude/hedwig/raw2/parts/middle.mov",
+   "/home/claude/hedwig/raw2/parts/sneakers_outro.mov",
+   "/home/claude/hedwig/raw2/parts/cta.mov"
+  ]
+ }
+]

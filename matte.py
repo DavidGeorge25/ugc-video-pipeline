@@ -22,3 +22,22 @@ def matte(src, out, w=576, h=1024, dsr=0.375):
 
 if __name__ == "__main__":
     print(matte(sys.argv[1], sys.argv[2]))
+
+def green(src, out, w=576, h=1024, lo=40, hi=140):
+    """Chroma-key matte for real green-screen footage (much cleaner than RVM when the background is pure green).
+    alpha from green dominance d = G - max(R, B): d<=lo -> person, d>=hi -> background, soft ramp between (hair/edges)."""
+    import cv2
+    rd = subprocess.Popen(["ffmpeg", "-v", "error", "-i", src, "-vf", f"scale={w}:{h}", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
+    wr = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "gray", "-s", f"{w}x{h}", "-r", "30", "-i", "-",
+                           "-c:v", "ffv1", out], stdin=subprocess.PIPE)
+    n = 0
+    while True:
+        buf = rd.stdout.read(w * h * 3)
+        if len(buf) < w * h * 3: break
+        f = np.frombuffer(buf, np.uint8).reshape(h, w, 3).astype(np.int16)
+        d = f[..., 1] - np.maximum(f[..., 0], f[..., 2])
+        a = np.clip((hi - d) / float(hi - lo), 0, 1)
+        a = cv2.GaussianBlur((a * 255).astype(np.uint8), (0, 0), 0.8)
+        wr.stdin.write(a.tobytes()); n += 1
+    wr.stdin.close(); wr.wait(); rd.wait()
+    return n

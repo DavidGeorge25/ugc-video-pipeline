@@ -1,0 +1,148 @@
+{
+ "name": "05_sneakers",
+ "assets": {
+  "sankey_config": "sankey.json",
+  "image": "../../assets/batch2/sneakers_hero.png",
+  "emails_png": "../../assets/batch2/sneakers_emails.png",
+  "recording": "../../assets/hedwig.mov"
+ },
+ "recording_views": {
+  "full": [
+   1460,
+   880,
+   2880
+  ],
+  "flow": [
+   1460,
+   880,
+   2880
+  ]
+ },
+ "lines": [
+  {
+   "text": "Why would you even buy sneakers when you could just email every single shoe company and ask them for a free pair?",
+   "bg": "image",
+   "person": "center",
+   "title": "POV: you asked every shoe brand for FREE sneakers 👟😭",
+   "title_y": 0.22
+  },
+  {
+   "text": "I wanted to see if this would actually work, so I took the risk and emailed every shoe company asking for a free pair of sneakers.",
+   "bg": "emails",
+   "person": "right",
+   "title": "POV: you asked every shoe brand for FREE sneakers 👟😭",
+   "title_y": 0.22
+  },
+  {
+   "text": "In total, I sent 567 emails, and I'm just so surprised that there were that many companies selling them.",
+   "bg": "sankey",
+   "focus": [
+    "Emails Sent"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "113 of them gave me an auto reply, which I found pretty lame because AI was doing all of the work.",
+   "bg": "sankey",
+   "focus": [
+    "Auto-Reply"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "48 of them just failed to send, so I'm pretty sure I just went to spam,",
+   "bg": "sankey",
+   "focus": [
+    "Failed to Send"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "and 328 of them straight out ghosted me, and at this point I was really starting to lose hope.",
+   "bg": "sankey",
+   "focus": [
+    "No Response"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "But I did end up getting 78 responses.",
+   "bg": "sankey",
+   "focus": [
+    "Got a Response"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "So now I'm going to go to Hedwig Mail to draft a convincing response to each email,",
+   "bg": "recording",
+   "mode": "freeze",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ],
+   "person": "demo"
+  },
+  {
+   "text": "and once I click run, Hedwig's going to launch an agent that reads every single email, drafts a convincing reply, and sends them all out.",
+   "bg": "recording",
+   "mode": "play",
+   "views": [
+    [
+     "full",
+     null
+    ]
+   ],
+   "person": "demo"
+  },
+  {
+   "text": "Unfortunately 51 of them did say no,",
+   "bg": "sankey",
+   "focus": [
+    "Said No"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "but 5 of them sent me a free sticker, which I guess is kind of neat,",
+   "bg": "sankey",
+   "focus": [
+    "Free Sticker"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "but I was pretty surprised that 22 of them actually said yes.",
+   "bg": "sankey",
+   "focus": [
+    "Said Yes"
+   ],
+   "person": "tilt"
+  },
+  {
+   "text": "I was actually pretty shocked with these results and I don't know what they're going to send my way, but I do not need 22 pairs of shoes.",
+   "bg": "image",
+   "person": "center"
+  },
+  {
+   "text": "So comment down below what company I should do next and maybe I'll send you something.",
+   "bg": "image",
+   "person": "center"
+  }
+ ],
+ "person_scale": 0.82,
+ "demo_box": [
+  160,
+  1100
+ ],
+ "speed_map": {
+  "base": 1.0,
+  "slow": 1.0,
+  "slow_phrases": []
+ },
+ "music": "/home/claude/hedwig/music/nocturne_sped.mp3",
+ "matte": "green",
+ "white_balance": true
+}

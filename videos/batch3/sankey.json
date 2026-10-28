@@ -1,0 +1,48 @@
+{
+ "source": {
+  "label": "Emails Sent",
+  "value": 567,
+  "color": "#bab0ab"
+ },
+ "mid": [
+  {
+   "label": "Auto-Reply",
+   "value": 113,
+   "color": "#4e79a7"
+  },
+  {
+   "label": "Failed to Send",
+   "value": 48,
+   "color": "#f28e2c"
+  },
+  {
+   "label": "No Response",
+   "value": 328,
+   "color": "#e15759"
+  },
+  {
+   "label": "Got a Response",
+   "value": 78,
+   "color": "#76b7b2"
+  }
+ ],
+ "end_parent": "Got a Response",
+ "end": [
+  {
+   "label": "Said No",
+   "value": 51,
+   "color": "#59a14f"
+  },
+  {
+   "label": "Free Sticker",
+   "value": 5,
+   "color": "#edc949"
+  },
+  {
+   "label": "Said Yes",
+   "value": 22,
+   "color": "#59a14f"
+  }
+ ],
+ "credit": false
+}

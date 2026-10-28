@@ -8,7 +8,7 @@ def prepare_raw(parts, out):
         q = os.path.join(d, f"p{i:02d}.mp4")
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", p,
                         "-vf", "fps=30,scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1",
-                        "-c:v", "libx264", "-crf", "16", "-preset", "ultrafast", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", q], check=True)
+                        "-af", "aresample=async=1:first_pts=0", "-c:v", "libx264", "-crf", "16", "-preset", "ultrafast", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2", q], check=True)
         lst.append(f"file '{q}'")
     open(os.path.join(d, "l.txt"), "w").write("\n".join(lst))
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", os.path.join(d, "l.txt"), "-c", "copy", out], check=True)

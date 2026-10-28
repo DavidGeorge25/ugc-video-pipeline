@@ -6,5 +6,5 @@ raw, out, spec = sys.argv[1:4]; os.makedirs(out, exist_ok=True)
 for item in spec.split(","):
     name, rng = item.split("="); a, b = map(float, rng.split("-"))
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{a}", "-i", raw, "-t", f"{b - a:.2f}", "-c:v", "libx264", "-crf", "14",
-                    "-preset", "ultrafast", "-c:a", "aac", "-b:a", "192k", os.path.join(out, f"{name}.mov")], check=True)
+                    "-preset", "ultrafast", "-af", "aresample=async=1:first_pts=0", "-c:a", "aac", "-b:a", "192k", os.path.join(out, f"{name}.mov")], check=True)
     print(name, a, b)

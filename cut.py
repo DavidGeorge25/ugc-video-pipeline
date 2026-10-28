@@ -162,7 +162,7 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
         nxt = words[w1 + 1]["s"] - 0.04 if w1 + 1 < len(words) else b
         prv = words[w0 - 1]["e"] + 0.02 if w0 > 0 else 0
         min_end = ws[-1]["s"] + 0.25   # floor only; real ending comes from the sensitive audible track
-        b = min(max(b, min_end), nxt); a = max(a, prv)
+        b = min(max(b, min_end), nxt); a = max(min(a, ws[0]["s"] - 0.06), prv)
         # remove internal silences
         i, cur = int(a / hop), a
         pieces = []; run = 0; j = int(a / hop)
@@ -178,8 +178,12 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
         pieces.append((cur, b))
         # drop audio islands with no transcribed word in them (mumbled false starts the ASR skipped)
         pieces = [p for p in pieces if any(w["s"] - 0.15 < p[1] and w["e"] + 0.35 > p[0] for w in ws)]
-        for p in pieces:
-            if p[1] - p[0] > 0.05: segs.append(dict(s=round(p[0], 3), e=round(p[1], 3), line=li))
+        for pi, p in enumerate(pieces):
+            if p[1] - p[0] > 0.05:
+                sg = dict(s=round(p[0], 3), e=round(p[1], 3), line=li)
+                if pi == 0: sg["w0"] = ws[0]["s"]                 # tightening may never eat into the first word
+                if pi == len(pieces) - 1: sg["w1"] = ws[-1]["e"]  # ...or the last one
+                segs.append(sg)
         report.append(f"line {li+1}: take {k+1}/{len(cs)} @ {ws[0]['s']:.1f}s score {c['score']:.2f}")
         # script-word -> source time via alignment
         L = norm_tokens(line)
@@ -191,8 +195,8 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
         i0, i1 = int(sg["s"] / hop), int(sg["e"] / hop); seg = AUDIBLE[i0:i1]
         if len(seg) < 15 or seg.mean() < 0.3: continue
         lead = int(np.argmax(seg)); trail = int(np.argmax(seg[::-1]))
-        sg["s"] = round(sg["s"] + max(0, lead * hop - 0.03), 3)
-        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.13), 3)
+        sg["s"] = round(min(sg["s"] + max(0, lead * hop - 0.03), max(sg["s"], sg.pop("w0", 1e9) - 0.06)), 3)
+        sg["e"] = round(max(sg["e"] - max(0, trail * hop - 0.13), min(sg["e"], sg.pop("w1", -1) + 0.06)), 3)
         tight.append(sg)
     segs = tight
     clean = []

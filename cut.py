@@ -182,7 +182,6 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
             if p[1] - p[0] > 0.05:
                 sg = dict(s=round(p[0], 3), e=round(p[1], 3), line=li)
                 if pi == 0: sg["w0"] = ws[0]["s"]                 # tightening may never eat into the first word
-                if pi == len(pieces) - 1: sg["w1"] = ws[-1]["e"]  # ...or the last one
                 segs.append(sg)
         report.append(f"line {li+1}: take {k+1}/{len(cs)} @ {ws[0]['s']:.1f}s score {c['score']:.2f}")
         # script-word -> source time via alignment
@@ -196,7 +195,7 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
         if len(seg) < 15 or seg.mean() < 0.3: continue
         lead = int(np.argmax(seg)); trail = int(np.argmax(seg[::-1]))
         sg["s"] = round(min(sg["s"] + max(0, lead * hop - 0.03), max(sg["s"], sg.pop("w0", 1e9) - 0.06)), 3)
-        sg["e"] = round(max(sg["e"] - max(0, trail * hop - 0.13), min(sg["e"], sg.pop("w1", -1) + 0.06)), 3)
+        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.13), 3)   # ASR word ends run long into silence; trust the audio here
         tight.append(sg)
     segs = tight
     clean = []

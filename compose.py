@@ -173,7 +173,7 @@ def person_matrix(preset, geo, mult=1.0):
     if lift > 0: M[1, 2] += lift
     return M
 
-def solidify_alpha(a8):
+def solidify_alpha(a8, edge_feather=True):
     """Dark shirt on a dark room makes the matte semi-transparent inside the body (hazy, flickering shirt).
     Anything enclosed by the silhouette (the frame bottom counts as closed, the body runs off it) becomes opaque;
     soft edges (hair, fingers) keep their original matte."""
@@ -195,6 +195,8 @@ def solidify_alpha(a8):
         body = cv2.GaussianBlur(x, (0, 0), 1.2)
         ramp = np.clip(np.arange(h - y0) / 60.0, 0, 1)[:, None]   # blend in over 60px so the neck has no seam
         out[y0:] = out[y0:] * (1 - ramp) + body * ramp
+    if not edge_feather:   # green screen: clean matte, hard cutoff where the shirt meets the frame edge
+        return out.clip(0, 255).astype(np.uint8)
     fx = np.clip(np.minimum(np.arange(w), w - 1 - np.arange(w)) / (0.07 * w), 0, 1)
     fy = np.clip((h - 1 - np.arange(h)) / (0.05 * h), 0, 1)
     out *= (fx[None, :] ** 1.5) * (fy[:, None] ** 1.5)
@@ -335,7 +337,7 @@ def compose(cfg, tl, cut_mp4, alpha_mkv, out_mp4, assets):
         M = person_matrix(C.get("person", "tilt"), geo, cfg.get("person_scale", 1.0))
         fg = cv2.warpAffine(np.frombuffer(buf, np.uint8).reshape(OH, OW, 3), M, (OW, OH), flags=cv2.INTER_CUBIC)
         a8 = np.frombuffer(abuf, np.uint8).reshape(OH, OW)
-        if cfg.get("solid_body", True): a8 = solidify_alpha(a8)
+        if cfg.get("solid_body", True): a8 = solidify_alpha(a8, cfg.get("matte") != "green")
         al = cv2.warpAffine(a8, M, (OW, OH), flags=cv2.INTER_LINEAR).astype(np.float32)[..., None] / 255
         # green-screen spill removal: green can never exceed the brighter of red/blue (skin, black shirt unaffected)
         fgf = fg.astype(np.float32)

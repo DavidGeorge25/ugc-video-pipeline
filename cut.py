@@ -1,6 +1,6 @@
 """Pick the best (latest) take of each script line from a raw one-take recording,
 remove dead air, and render cut.mp4 (1080x1920, 30fps) + timeline.json."""
-import json, re, subprocess, numpy as np
+import json, os, re, subprocess, numpy as np
 from num2words import num2words
 from rapidfuzz.distance import Levenshtein
 from asr import transcribe
@@ -94,8 +94,13 @@ def choose(lines_c):
         picks[i] = k; k = best[i][k][1]; i -= 1
     return picks
 
+RNN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models/rnnoise/std.rnnn")
+
 def rms_track(path, hop=0.01):
-    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-ac", "1", "-ar", "16000", "-f", "s16le", "-"], capture_output=True).stdout
+    # measure on DENOISED audio: room hiss sits just above a raw noise-floor threshold and made every pause "audible",
+    # so no dead air between lines was ever removed
+    af = ["-af", f"arnndn=m={RNN}"] if os.path.exists(RNN) else []
+    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", path] + af + ["-ac", "1", "-ar", "16000", "-f", "s16le", "-"], capture_output=True).stdout
     a = np.frombuffer(pcm, np.int16).astype(np.float32) / 32768
     h = int(16000 * hop); n = len(a) // h
     r = np.sqrt((a[:n * h].reshape(n, h) ** 2).mean(1) + 1e-12)
@@ -103,7 +108,7 @@ def rms_track(path, hop=0.01):
     lo, hi = np.percentile(db, 10), np.percentile(db, 95)
     thr = lo + 0.22 * (hi - lo)
     global AUDIBLE
-    AUDIBLE = db > (np.percentile(db, 5) + 9)      # sensitive track: catches soft s/f/th endings
+    AUDIBLE = db > max(np.percentile(db, 5) + 9, hi - 40)      # sensitive track: catches soft s/f/th endings
     return db > thr, hop
 
 def speech_span(voiced, hop, t0, t1, lead=0.4, tail=1.0):
@@ -118,7 +123,7 @@ def speech_span(voiced, hop, t0, t1, lead=0.4, tail=1.0):
         if quiet >= 20: e -= quiet; break
     return s * hop, (e + 1) * hop
 
-def plan(raw, script_lines, min_gap=0.28, pad=0.04, words=None):
+def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
     words = words or transcribe(raw)
     toks = expand_words(words)
     voiced, hop = rms_track(raw)
@@ -167,7 +172,7 @@ def plan(raw, script_lines, min_gap=0.28, pad=0.04, words=None):
             else:
                 if run * hop >= min_gap:
                     gs, ge = (j - run) * hop, j * hop
-                    pieces.append((cur, gs + 0.10)); cur = ge - 0.06   # let the word before the pause fully ring out
+                    pieces.append((cur, gs + 0.09)); cur = ge - 0.05   # let the word before the pause fully ring out
                 run = 0
             j += 1
         pieces.append((cur, b))

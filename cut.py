@@ -192,7 +192,7 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
         if len(seg) < 15 or seg.mean() < 0.3: continue
         lead = int(np.argmax(seg)); trail = int(np.argmax(seg[::-1]))
         sg["s"] = round(sg["s"] + max(0, lead * hop - 0.03), 3)
-        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.20), 3)
+        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.13), 3)
         tight.append(sg)
     segs = tight
     clean = []

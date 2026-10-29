@@ -106,6 +106,8 @@ def rms_track(path, hop=0.01):
     r = np.sqrt((a[:n * h].reshape(n, h) ** 2).mean(1) + 1e-12)
     db = 20 * np.log10(r)
     lo, hi = np.percentile(db, 10), np.percentile(db, 95)
+    global DB, HI
+    DB, HI = db, hi
     thr = lo + 0.22 * (hi - lo)
     global AUDIBLE
     AUDIBLE = db > max(np.percentile(db, 5) + 9, hi - 40)      # sensitive track: catches soft s/f/th endings
@@ -188,15 +190,28 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
         L = norm_tokens(line)
         tmap = {li_: words[toks[ti][1]]["s"] for li_, ti in c["pairs"]}
         line_words.append(dict(tok_times=tmap, ntok=len(L)))
-    # final tightening: shave quiet heads/tails to 0.05s, drop near-silent slivers
+    # final compaction (jump-cut style): every pause in the DENOISED audio, inside a line or between lines,
+    # is cut down to ~0.1s. Bounds use a soft threshold so quiet onsets ("And...") and word decays survive.
+    SOFT, QUIET = HI - 45, HI - 38
     tight = []
     for sg in segs:
-        i0, i1 = int(sg["s"] / hop), int(sg["e"] / hop); seg = AUDIBLE[i0:i1]
-        if len(seg) < 15 or seg.mean() < 0.3: continue
-        lead = int(np.argmax(seg)); trail = int(np.argmax(seg[::-1]))
-        sg["s"] = round(min(sg["s"] + max(0, lead * hop - 0.03), max(sg["s"], sg.pop("w0", 1e9) - 0.06)), 3)
-        sg["e"] = round(sg["e"] - max(0, trail * hop - 0.13), 3)   # ASR word ends run long into silence; trust the audio here
-        tight.append(sg)
+        sg.pop("w0", None)
+        i0, i1 = int(sg["s"] / hop), int(sg["e"] / hop)
+        snd = DB[i0:i1] > SOFT
+        if snd.sum() < 10: continue
+        f = i0 + int(np.argmax(snd)); l = i1 - 1 - int(np.argmax(snd[::-1]))
+        while f > 0 and f > i0 - 15 and DB[f - 1] > SOFT: f -= 1          # soft onset just before the cut
+        while l < len(DB) - 1 and l < i1 + 15 and DB[l + 1] > SOFT: l += 1  # soft decay just after it
+        cur = f * hop - 0.03; j = f; run = 0
+        while j <= l:
+            if DB[j] < QUIET: run += 1
+            else:
+                if run * hop >= 0.12:
+                    tight.append(dict(s=round(cur, 3), e=round((j - run) * hop + 0.05, 3), line=sg["line"]))
+                    cur = j * hop - 0.03
+                run = 0
+            j += 1
+        tight.append(dict(s=round(cur, 3), e=round((l + 1) * hop + 0.05, 3), line=sg["line"]))
     segs = tight
     clean = []
     for sg in segs:

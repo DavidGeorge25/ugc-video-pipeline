@@ -183,7 +183,8 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
         for pi, p in enumerate(pieces):
             if p[1] - p[0] > 0.05:
                 sg = dict(s=round(p[0], 3), e=round(p[1], 3), line=li)
-                if pi == 0: sg["w0"] = ws[0]["s"]                 # tightening may never eat into the first word
+                if pi == 0: sg["w0"], sg["lo"] = ws[0]["s"], prv  # compaction may not eat the first word or reach the previous one
+                if pi == len(pieces) - 1: sg["hi"] = nxt
                 segs.append(sg)
         report.append(f"line {li+1}: take {k+1}/{len(cs)} @ {ws[0]['s']:.1f}s score {c['score']:.2f}")
         # script-word -> source time via alignment
@@ -194,24 +195,32 @@ def plan(raw, script_lines, min_gap=0.22, pad=0.04, words=None):
     # is cut down to ~0.1s. Bounds use a soft threshold so quiet onsets ("And...") and word decays survive.
     SOFT, QUIET = HI - 45, HI - 38
     tight = []
+    def add(s_, e_, line):
+        i, k = int(s_ / hop), int(e_ / hop)
+        if k - i > 3 and DB[i:k].max() > QUIET: tight.append(dict(s=round(s_, 3), e=round(e_, 3), line=line))
     for sg in segs:
-        sg.pop("w0", None)
         i0, i1 = int(sg["s"] / hop), int(sg["e"] / hop)
+        lo_f = int(sg.get("lo", sg["s"] - 0.15) / hop); hi_f = int(sg.get("hi", sg["e"] + 0.15) / hop)
         snd = DB[i0:i1] > SOFT
         if snd.sum() < 10: continue
         f = i0 + int(np.argmax(snd)); l = i1 - 1 - int(np.argmax(snd[::-1]))
-        while f > 0 and f > i0 - 15 and DB[f - 1] > SOFT: f -= 1          # soft onset just before the cut
-        while l < len(DB) - 1 and l < i1 + 15 and DB[l + 1] > SOFT: l += 1  # soft decay just after it
-        cur = f * hop - 0.03; j = f; run = 0
+        if "w0" in sg: f = min(f, int((sg["w0"] - 0.05) / hop))
+        while f > lo_f and f > i0 - 15 and DB[f - 1] > SOFT: f -= 1            # soft onset just before the cut
+        while l < hi_f and l < i1 + 15 and DB[l + 1] > SOFT: l += 1            # soft decay just after it
+        f = max(f, lo_f, 0); l = min(l, hi_f, len(DB) - 1)
+        cur = f * hop - 0.05; j = f; run = 0
         while j <= l:
             if DB[j] < QUIET: run += 1
             else:
                 if run * hop >= 0.12:
-                    tight.append(dict(s=round(cur, 3), e=round((j - run) * hop + 0.05, 3), line=sg["line"]))
-                    cur = j * hop - 0.03
+                    rs = j - run; ef = rs
+                    while ef < j and ef < rs + 10 and DB[ef] > SOFT: ef += 1       # let the decay ring out
+                    sf = j
+                    while sf > ef and sf > j - 10 and DB[sf - 1] > SOFT: sf -= 1   # keep soft onsets ("but", "and")
+                    add(cur, ef * hop + 0.04, sg["line"]); cur = sf * hop - 0.05
                 run = 0
             j += 1
-        tight.append(dict(s=round(cur, 3), e=round((l + 1) * hop + 0.05, 3), line=sg["line"]))
+        add(cur, (l + 1) * hop + 0.05, sg["line"])
     segs = tight
     clean = []
     for sg in segs:
